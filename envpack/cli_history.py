@@ -44,6 +44,17 @@ def cmd_history_remove(args: argparse.Namespace) -> None:
         print(f"No entry found for: {args.snapshot}")
 
 
+def cmd_history_clear(args: argparse.Namespace) -> None:
+    """Remove all entries from the history file after optional confirmation."""
+    if not args.yes:
+        confirm = input("Clear all history entries? [y/N] ").strip().lower()
+        if confirm != "y":
+            print("Aborted.")
+            return
+    count = history.clear_history(history_file=args.history_file)
+    print(f"Cleared {count} history entry/entries.")
+
+
 def register_history_commands(subparsers: argparse._SubParsersAction, history_file: str) -> None:
     p = subparsers.add_parser("history", help="Manage snapshot history")
     p.add_argument("--history-file", default=history_file)
@@ -64,3 +75,7 @@ def register_history_commands(subparsers: argparse._SubParsersAction, history_fi
     rm = hs.add_parser("remove", help="Remove a history entry")
     rm.add_argument("snapshot")
     rm.set_defaults(func=cmd_history_remove)
+
+    clr = hs.add_parser("clear", help="Remove all history entries")
+    clr.add_argument("-y", "--yes", action="store_true", help="Skip confirmation prompt")
+    clr.set_defaults(func=cmd_history_clear)
