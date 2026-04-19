@@ -55,6 +55,19 @@ def test_read_events_empty_when_no_file(audit_log):
     assert events == []
 
 
+def test_read_events_returns_all_events(audit_log):
+    """Ensure read_events returns events in insertion order with correct fields."""
+    actions = ["capture", "diff", "restore"]
+    for action in actions:
+        log_event(action, log_file=audit_log)
+
+    events = read_events(audit_log)
+    assert len(events) == len(actions)
+    for event, expected_action in zip(events, actions):
+        assert event["action"] == expected_action
+        assert "timestamp" in event
+
+
 def test_clear_log_removes_file(audit_log):
     log_event("capture", log_file=audit_log)
     assert audit_log.exists()
