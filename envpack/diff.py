@@ -29,6 +29,22 @@ class DiffResult(NamedTuple):
             "changed": {k: list(v) for k, v in self.changed.items()},
         }
 
+    @classmethod
+    def from_dict(cls, data: Dict[str, object]) -> "DiffResult":
+        """Reconstruct a DiffResult from a plain dict (e.g. deserialised JSON).
+
+        Args:
+            data: A dict as produced by :meth:`to_dict`.
+
+        Returns:
+            The corresponding DiffResult instance.
+        """
+        return cls(
+            added=dict(data.get("added", {})),
+            removed=dict(data.get("removed", {})),
+            changed={k: tuple(v) for k, v in data.get("changed", {}).items()},
+        )
+
 
 def diff_snapshots(before: Dict[str, str], after: Dict[str, str]) -> DiffResult:
     """Compare two snapshots and return a DiffResult.
