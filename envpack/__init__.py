@@ -1,3 +1,3 @@
 """envpack — snapshot, diff, and restore environment variable sets."""
 
-__version__ = "0.1.0"
+from envpack import snapshot, diff, restore, encrypt, audit, tags, compare, history
