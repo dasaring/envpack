@@ -21,6 +21,14 @@ class DiffResult(NamedTuple):
             lines.append(f"~ {key}: {old!r} -> {new!r}")
         return "\n".join(lines) if lines else "(no differences)"
 
+    def to_dict(self) -> Dict[str, object]:
+        """Return a plain dict representation suitable for serialisation."""
+        return {
+            "added": dict(self.added),
+            "removed": dict(self.removed),
+            "changed": {k: list(v) for k, v in self.changed.items()},
+        }
+
 
 def diff_snapshots(before: Dict[str, str], after: Dict[str, str]) -> DiffResult:
     """Compare two snapshots and return a DiffResult.
