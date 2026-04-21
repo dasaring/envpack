@@ -53,3 +53,13 @@ def test_summary_printed(snap_file, capsys):
     cmd_validate(make_args(snap_file))
     captured = capsys.readouterr()
     assert len(captured.out) > 0
+
+
+def test_value_exceeding_max_length_exits_1(tmp_path):
+    """A snapshot with a value longer than max_value_length should fail validation."""
+    data = {"HOME": "/home/user", "LONG_VAR": "x" * 10}
+    p = tmp_path / "snap.json"
+    p.write_text(json.dumps(data))
+    with pytest.raises(SystemExit) as exc:
+        cmd_validate(make_args(str(p), max_value_length=5))
+    assert exc.value.code == 1
