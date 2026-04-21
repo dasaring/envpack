@@ -12,6 +12,11 @@ DEFAULT_HISTORY = Path(".envpack_history.json")
 
 
 def cmd_rollback(args: argparse.Namespace) -> None:
+    """Execute the rollback command.
+
+    Resolves the target snapshot from history (by label or index), computes
+    the diff against the destination, and optionally writes the rollback.
+    """
     history_file = Path(getattr(args, "history_file", DEFAULT_HISTORY))
     label = getattr(args, "label", None)
     index = getattr(args, "index", -1)
@@ -31,6 +36,9 @@ def cmd_rollback(args: argparse.Namespace) -> None:
 
     try:
         result = rollback(source_path, dest, dry_run=dry_run)
+    except FileNotFoundError as exc:
+        print(f"[rollback] error: snapshot file not found — {exc}")
+        raise SystemExit(1)
     except Exception as exc:
         print(f"[rollback] error: {exc}")
         raise SystemExit(1)
@@ -49,6 +57,7 @@ def cmd_rollback(args: argparse.Namespace) -> None:
 
 
 def register_rollback_commands(subparsers: argparse._SubParsersAction) -> None:
+    """Register the 'rollback' subcommand with the given subparsers."""
     p = subparsers.add_parser("rollback", help="Revert to a previous snapshot")
     p.add_argument("dest", help="Destination snapshot file to overwrite")
     p.add_argument("--label", default=None, help="Roll back to the snapshot with this label")
