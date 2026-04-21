@@ -78,3 +78,14 @@ def test_clear_log_removes_file(audit_log):
 def test_clear_log_no_error_if_missing(audit_log):
     # Should not raise even if file doesn't exist
     clear_log(audit_log)
+
+
+def test_log_event_timestamp_is_iso_format(audit_log):
+    """Verify that the timestamp field is a valid ISO 8601 string."""
+    from datetime import datetime
+
+    event = log_event("capture", log_file=audit_log)
+    timestamp = event["timestamp"]
+    # Should parse without raising ValueError
+    parsed = datetime.fromisoformat(timestamp)
+    assert isinstance(parsed, datetime)
