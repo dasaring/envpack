@@ -80,3 +80,19 @@ def test_history_file_is_valid_json(history_file):
     with open(history_file) as f:
         data = json.load(f)
     assert isinstance(data, list)
+
+
+def test_record_snapshot_recorded_at_is_iso_format(history_file):
+    """Ensure recorded_at timestamp is a valid ISO 8601 string."""
+    from datetime import datetime
+
+    entry = history.record_snapshot("snap_a.json", history_file=history_file)
+    # Should not raise if the format is valid ISO 8601
+    parsed = datetime.fromisoformat(entry["recorded_at"])
+    assert isinstance(parsed, datetime)
+
+
+def test_record_snapshot_no_label_defaults_to_none(history_file):
+    """When no label is provided, the entry label should be None or absent."""
+    entry = history.record_snapshot("snap_a.json", history_file=history_file)
+    assert entry.get("label") is None
