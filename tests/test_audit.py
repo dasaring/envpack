@@ -89,3 +89,13 @@ def test_log_event_timestamp_is_iso_format(audit_log):
     # Should parse without raising ValueError
     parsed = datetime.fromisoformat(timestamp)
     assert isinstance(parsed, datetime)
+
+
+def test_read_events_after_clear(audit_log):
+    """Verify that read_events returns an empty list after the log is cleared."""
+    log_event("capture", log_file=audit_log)
+    log_event("restore", log_file=audit_log)
+    assert len(read_events(audit_log)) == 2
+
+    clear_log(audit_log)
+    assert read_events(audit_log) == []
