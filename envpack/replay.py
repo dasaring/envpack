@@ -29,10 +29,13 @@ def get_replay_target(history_file: str, index: Optional[int] = None, label: Opt
             raise ReplayError(f"No history entry with label {label!r}.")
         return entry
 
+    if not events:
+        raise ReplayError("History is empty; no entries to replay.")
+
     try:
         return events[index]
     except IndexError:
-        raise ReplayError(f"History index {index} out of range (0–{len(events) - 1}).")
+        raise ReplayError(f"History index {index} out of range (0\u2013{len(events) - 1}).")
 
 
 def replay(history_file: str, dest: str, index: Optional[int] = None,
