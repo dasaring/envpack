@@ -15,6 +15,7 @@ def history_file(tmp_path):
 
 
 def make_args(history_file, **kwargs):
+    """Create a minimal argparse.Namespace for CLI command testing."""
     ns = argparse.Namespace(history_file=history_file)
     for k, v in kwargs.items():
         setattr(ns, k, v)
@@ -49,6 +50,19 @@ def test_cmd_list_shows_entries(history_file, capsys):
     out = capsys.readouterr().out
     assert "snap_a.json" in out
     assert "[v1]" in out
+
+
+def test_cmd_list_shows_multiple_entries(history_file, capsys):
+    """Verify that all recorded snapshots appear in the list output."""
+    history.record_snapshot("snap_a.json", label="v1", history_file=history_file)
+    history.record_snapshot("snap_b.json", label="v2", history_file=history_file)
+    args = make_args(history_file)
+    cli_history.cmd_history_list(args)
+    out = capsys.readouterr().out
+    assert "snap_a.json" in out
+    assert "snap_b.json" in out
+    assert "[v1]" in out
+    assert "[v2]" in out
 
 
 def test_cmd_find_match(history_file, capsys):
